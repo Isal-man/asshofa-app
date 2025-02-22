@@ -1,0 +1,7 @@
+import React from 'react'
+
+export default waliSantri = () => {
+  return (
+    <div className='text-5xl bg-sky-500'>Wali Santri</div>
+  )
+}
