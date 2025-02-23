@@ -1,14 +1,17 @@
-import './App.css'
+import "./App.css";
+import { AppRoutes } from "./routes";
+import { AuthProvider } from "./context";
+import { Provider } from "react-redux";
+import { store } from "./redux";
 
 function App() {
-
-  return (
-    <>
-      <div>
-        <p className='text-5xl text-blue-500'>This will be Asshofa Management App</p>
-      </div>
-    </>
-  )
+    return (
+        <Provider store={store}>
+            <AuthProvider>
+                <AppRoutes />
+            </AuthProvider>
+        </Provider>
+    );
 }
 
-export default App
+export default App;

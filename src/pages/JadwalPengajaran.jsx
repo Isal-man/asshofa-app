@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default jadwalPengajaran = () => {
+export const JadwalPengajaran = () => {
   return (
     <div className='text-5xl bg-gray-500'>Jadwal Pengajaran</div>
   )

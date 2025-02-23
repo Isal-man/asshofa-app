@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default pengajar = () => {
+export const Pengajar = () => {
   return (
     <div className='text-5xl bg-purple-500'>Pengajar</div>
   )
