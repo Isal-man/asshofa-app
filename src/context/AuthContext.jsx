@@ -11,6 +11,24 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("token") || null);
     const [userData, setUserData] = useState(token ? jwtDecode(token) : null);
 
+    const register = async (username, password, gambar) => {
+        try {
+            const response = await axios.post(`${API_URL}/auth/register`, {
+                username,
+                password,
+                gambar,
+                role: "USER"
+            });
+            localStorage.setItem("token", response.data.token);
+            setUserData(jwtDecode(response.data.token));
+            localStorage.setItem("user", userData);
+            return response.status;
+        } catch (e) {
+            console.error("Register failed:", e.message);
+            return false;
+        }
+    };
+
     const login = async (username, password) => {
         try {
             const response = await axios.post(`${API_URL}/auth/login`, {
@@ -22,6 +40,7 @@ export const AuthProvider = ({ children }) => {
             setToken(response.data.token);
             setUserData(jwtDecode(response.data.token));
             localStorage.setItem("user", userData);
+            return response.status;
         } catch (error) {
             throw new Error("Invalid username or password");
         }
@@ -36,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     const contextValue = useMemo(
         () => ({
             user: userData,
+            register,
             login,
             logout,
         }),

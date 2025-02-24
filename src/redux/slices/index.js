@@ -1,3 +1,2 @@
-import { resetAuthState, setUsername, setPassword } from './authSlice'
-
-export { resetAuthState, setUsername, setPassword }
+import { resetAuthState, setUsername, setPassword, setGambar, setRole } from './authSlice'
+export { resetAuthState, setUsername, setPassword, setGambar, setRole }

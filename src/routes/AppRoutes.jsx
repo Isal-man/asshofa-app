@@ -12,7 +12,7 @@ export const AppRoutes = () => {
 
                 {/* private route */}
                 <Route path='/santri' element={<PrivateRoute element={<Santri />} />} />
-                <Route path='/dashboard' element={<PrivateRoute element={<Dashboard />}/>} />
+                <Route path='/' element={<PrivateRoute element={<Dashboard />}/>} />
                 <Route path='/jadwal-pengajaran' element={<PrivateRoute element={<JadwalPengajaran />} />} />
 
                 {/* protected route */}

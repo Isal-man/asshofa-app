@@ -9,6 +9,8 @@ import {
     styled,
     TextField,
     Typography,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -38,31 +40,49 @@ const Logo = styled("img")({
     margin: "0 auto 20px",
 });
 
-const asshofaLogo = import.meta.env.VITE_LOGO_ASSHOFA;
+const ASSHOFA_LOGO = import.meta.env.VITE_LOGO_ASSHOFA;
 
 export const Login = () => {
     const dispatch = useDispatch();
     const { login } = useAuth();
     const { username, password } = useSelector((state) => state.auth);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
-            await login(username, password);
-            dispatch(resetAuthState());
-            navigate("/dashboard")
+            const response = await login(username, password);
+            console.log(response, "ini response");
+            if (response === 200) {
+                dispatch(resetAuthState());
+                navigate("/");
+            } else {
+                setError("Login failed. Please check your credentials.");
+                setOpenSnackbar(true);
+            }
         } catch (e) {
             setError(e.message);
+            setOpenSnackbar(true);
         }
+        setLoading(false);
+    };
+
+    const handleCloseSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenSnackbar(false);
     };
 
     return (
         <Container>
             <LoginCard>
-                <CardContent>
-                    <Logo src={asshofaLogo} alt="Asshofa Logo" />
+            <CardContent>
+                    <Logo src={ASSHOFA_LOGO} alt="Asshofa Logo" />
                     <Typography
                         variant="h5"
                         align="center"
@@ -138,23 +158,25 @@ export const Login = () => {
                         <Button
                             fullWidth
                             variant="contained"
-                            color="primary"
+                            color={"primary"}
                             type="submit"
+                            disabled={loading}
                             sx={{ marginTop: 2 }}
                         >
-                            Login
+                            {loading? "Loading..." : "Login"}
                         </Button>
                     </form>
-                    {error && (
-                        <Typography color="error" align="center">
-                            {error}
-                        </Typography>
-                    )}
                     <a href="/register" className="block text-center mt-4">
                         Belum punya akun? klik disini
                     </a>
                 </CardContent>
+                <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                    <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                        {error}
+                    </Alert>
+                </Snackbar>
             </LoginCard>
         </Container>
     );
 };
+
