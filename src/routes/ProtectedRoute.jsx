@@ -6,7 +6,7 @@ export const ProtectedRoute = ({ element, allowedRoles }) => {
     const { user } = useAuth();
 
     if (!user) return <Navigate to={"/login"} />;
-    if (!allowedRoles.includes(user.role)) return <Navigate to={"/dashboard"} />;
+    if (!allowedRoles.includes(user.role)) return <Navigate to={"/"} />;
 
     return element;
 };
