@@ -38,8 +38,9 @@ export const AuthProvider = ({ children }) => {
 
             localStorage.setItem("token", response.data.token);
             setToken(response.data.token);
-            setUserData(jwtDecode(response.data.token));
-            localStorage.setItem("user", userData);
+            const user = jwtDecode(response.data.token);
+            setUserData({...user});
+            localStorage.setItem("user", JSON.stringify(user));
             return response.status;
         } catch (error) {
             throw new Error("Invalid username or password");
