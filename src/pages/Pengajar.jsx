@@ -1,7 +1,10 @@
-import React from 'react'
+import { Sidebar } from '../components'
 
 export const Pengajar = () => {
   return (
-    <div className='text-5xl bg-purple-500'>Pengajar</div>
+    <>
+      <Sidebar />
+      <div className='text-5xl bg-purple-500'>Pengajar</div>
+    </>
   )
 }
