@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.dashboard-container {
+  transition: margin-left 0.3s ease-in-out;
+}
