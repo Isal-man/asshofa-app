@@ -2,6 +2,8 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const token = localStorage.getItem("token");
+
 const apiService = axios.create({
     baseURL: API_URL,
     headers: {
@@ -11,7 +13,9 @@ const apiService = axios.create({
 
 const refreshToken = async () => {
     try {
-        const response = await axios.get(`${API_URL}/auth/refresh-token`);
+        const response = await axios.get(`${API_URL}/auth/refresh-token`, {
+            "headers": { "Authorization": `Bearer ${token}` },
+        });
 
         if (response.status === 200) {
             localStorage.setItem("token", response.data.token);
@@ -22,7 +26,6 @@ const refreshToken = async () => {
         }
     } catch (error) {
         localStorage.removeItem("token");
-        window.location.href = "/login";
         throw new Error("Failed to refresh token");
     }
 }
@@ -30,7 +33,7 @@ const refreshToken = async () => {
 apiService.interceptors.response.use(
     async (response) => response,
     async (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
             await refreshToken();
             return apiService.request(error.config);
         } else {

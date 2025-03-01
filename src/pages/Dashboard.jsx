@@ -88,7 +88,7 @@ export const Dashboard = () => {
     <div className="flex">
       <Sidebar />
       <div
-        className={`dashboard-container ml-30 p-6`}
+        className={`container ml-30 p-6`}
       >
         <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
 
@@ -180,7 +180,7 @@ export const Dashboard = () => {
               <YAxis />
               <Tooltip content={<CustomTooltipJumlah />} />
               <Legend />
-              <Bar dataKey="value">
+              <Bar dataKey="value" name={"Nama Kelas"}>
                 {dashboardData.jumlahSantriPerKelas.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
@@ -189,6 +189,7 @@ export const Dashboard = () => {
                 ))}
               </Bar>
             </BarChart>
+
           ) : (
             <CircularProgress />
           )}
@@ -213,7 +214,7 @@ export const Dashboard = () => {
               <YAxis />
               <Tooltip content={<CustomTooltipNilai />} />
               <Legend />
-              <Bar dataKey="value">
+              <Bar dataKey="value" name={"Nama Kelas"}>
                 {dashboardData.nilaiAveragePerKelas.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}

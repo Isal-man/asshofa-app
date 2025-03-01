@@ -56,7 +56,6 @@ export const Login = () => {
         setLoading(true);
         try {
             const response = await login(username, password);
-            console.log(response, "ini response");
             if (response === 200) {
                 dispatch(resetAuthState());
                 navigate("/");
