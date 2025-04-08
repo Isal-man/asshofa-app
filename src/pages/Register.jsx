@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setUsername, setPassword, setGambar, resetAuthState } from "../redux";
+import { setUsername, setPassword, setGambarUser, resetAuthState } from "../redux";
 import { useAuth } from "../context";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -102,7 +102,7 @@ export const Register = () => {
                         headers: { "Content-Type": "multipart/form-data" },
                     }
                 );
-                dispatch(setGambar(response.data))
+                dispatch(setGambarUser(response.data))
             } catch (e) {
                 console.error(
                     "upload failed",

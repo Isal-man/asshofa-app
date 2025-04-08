@@ -1,3 +1,4 @@
 import { AuthProvider, useAuth } from "./AuthContext";
+import { SidebarProvider, useSidebar } from "./SidebarContext";
 
-export { AuthProvider, useAuth }
+export { SidebarProvider, useSidebar, AuthProvider, useAuth }

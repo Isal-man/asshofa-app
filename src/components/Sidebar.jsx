@@ -1,19 +1,23 @@
-import { useState } from "react";
 import {
   FaCalendar,
   FaChalkboardTeacher,
   FaTachometerAlt,
   FaUserGraduate,
   FaUsers,
+  FaSignOutAlt,
 } from "react-icons/fa";
-import { useAuth } from "../context";
-import { NavLink } from "react-router-dom";
+import { useAuth, useSidebar } from "../context";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export const Sidebar = () => {
-  const { user } = useAuth();
-  const [isOpen, setIsOpen] = useState(true);
+  const { user, logout } = useAuth();
+  const { isOpen, toggleSidebar } = useSidebar()
+  const navigate = useNavigate();
 
-  const toggleSidebar = () => setIsOpen(!isOpen);
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const menuItems = [
     { name: "Dashboard", path: "/", icon: <FaTachometerAlt /> },
@@ -35,35 +39,54 @@ export const Sidebar = () => {
           isOpen ? "w-64" : "w-24"
         }`}
       >
-        <div className="flex flex-col h-full">
-          <div className="flex flex-col items-center py-6 border-b border-gray-700">
-            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
-              <img
-                src={user?.gambar}
-                alt="logo user"
-                className="w-full h-full object-cover"
-              />
+        <div className="flex flex-col h-full justify-between">
+          <div>
+            {/* Header */}
+            <div className="flex flex-col items-center py-6 border-b border-gray-700">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
+                <img
+                  src={user?.gambar}
+                  alt="logo user"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {isOpen && <p className="mt-2 text-sm">{user?.username}</p>}
             </div>
-            {isOpen && <p className="mt-2 text-sm">{user?.username}</p>}
+
+            {/* Menu */}
+            <nav className="mt-4">
+              {menuItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-3 my-1 rounded-lg transition-all ${
+                      isActive ? "bg-blue-600" : "hover:bg-gray-700"
+                    } ${isOpen ? "" : "justify-center"}`
+                  }
+                >
+                  <span className="text-xl text-white">{item.icon}</span>
+                  {isOpen && (
+                    <span className="ml-3 text-white">{item.name}</span>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
           </div>
 
-          {/* Menu */}
-          <nav className="flex-1 mt-4">
-            {menuItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 my-1 rounded-lg transition-all ${
-                    isActive ? "bg-blue-600" : "hover:bg-gray-700"
-                  } ${isOpen ? "" : "justify-center"}`
-                }
-              >
-                <span className="text-xl text-white">{item.icon}</span>
-                {isOpen && <span className="ml-3 text-white">{item.name}</span>}
-              </NavLink>
-            ))}
-          </nav>
+          {/* Logout Section */}
+          <div>
+            <div className="border-t border-gray-700 mb-2" />
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center px-2 py-3 mb-4 text-white hover:bg-gray-700 transition-all ${
+                isOpen ? "" : "justify-center"
+              }`}
+            >
+              <FaSignOutAlt className="text-xl" />
+              {isOpen && <span className="ml-3">Logout</span>}
+            </button>
+          </div>
         </div>
 
         {/* Toggle Button */}

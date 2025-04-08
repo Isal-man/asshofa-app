@@ -1,2 +1,3 @@
-import { resetAuthState, setUsername, setPassword, setGambar, setRole } from './authSlice'
-export { resetAuthState, setUsername, setPassword, setGambar, setRole }
+import { resetAuthState, setUsername, setPassword, setGambarUser, setRole } from './authSlice'
+import { resetSantriState, setAlamat, setGambarSantri, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir } from './santriSlice'
+export { resetAuthState, setUsername, setPassword, setGambarUser, setRole, resetSantriState, setAlamat, setGambarSantri, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir }

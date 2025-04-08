@@ -1,4 +1,4 @@
 import store from './store'
-import { resetAuthState, setUsername, setPassword, setGambar, setRole } from './slices'
+import { resetAuthState, setUsername, setPassword, setGambarUser, setRole, resetSantriState, setAlamat, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir, setGambarSantri } from './slices'
 
-export { store , resetAuthState, setUsername, setPassword, setGambar, setRole }
+export { store , resetAuthState, setUsername, setPassword, setGambarUser, setRole, resetSantriState, setAlamat, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir, setGambarSantri }

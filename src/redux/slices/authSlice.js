@@ -20,7 +20,7 @@ const authSlice = createSlice({
         setRole: (state, action) => {
             state.role = action.payload
         },
-        setGambar: (state, action) => {
+        setGambarUser: (state, action) => {
             state.gambar = action.payload
         },
         resetAuthState: (state) => {
@@ -32,5 +32,5 @@ const authSlice = createSlice({
     }
 })
 
-export const { setUsername, setPassword, setGambar, setRole, resetAuthState } = authSlice.actions;
+export const { setUsername, setPassword, setGambarUser, setRole, resetAuthState } = authSlice.actions;
 export default authSlice.reducer;

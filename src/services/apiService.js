@@ -13,9 +13,7 @@ const apiService = axios.create({
 
 const refreshToken = async () => {
     try {
-        const response = await axios.get(`${API_URL}/auth/refresh-token`, {
-            "headers": { "Authorization": `Bearer ${token}` },
-        });
+        const response = await axios.post(`${API_URL}/auth/refresh-token?token=${token}`)
 
         if (response.status === 200) {
             localStorage.setItem("token", response.data.token);
@@ -25,7 +23,6 @@ const refreshToken = async () => {
             throw new Error("Failed to refresh token");
         }
     } catch (error) {
-        localStorage.removeItem("token");
         throw new Error("Failed to refresh token");
     }
 }

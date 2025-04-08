@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Sidebar } from "../components";
 import {
   Card,
@@ -30,7 +31,7 @@ const COLORS = [
 ];
 
 const CustomTooltipJumlah = ({ active, payload }) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-white text-black p-2 rounded shadow-md">
         <p className="font-semibold">{payload[0].payload.name}</p>
@@ -41,8 +42,13 @@ const CustomTooltipJumlah = ({ active, payload }) => {
   return null;
 };
 
+CustomTooltipJumlah.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+};
+
 const CustomTooltipNilai = ({ active, payload }) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div className="bg-white text-black p-2 rounded shadow-md">
         <p className="font-semibold">{payload[0].payload.name}</p>
@@ -51,6 +57,11 @@ const CustomTooltipNilai = ({ active, payload }) => {
     );
   }
   return null;
+};
+
+CustomTooltipNilai.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
 };
 
 export const Dashboard = () => {
@@ -87,9 +98,7 @@ export const Dashboard = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div
-        className={`container ml-30 p-6`}
-      >
+      <div className="container ml-30 p-6">
         <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
 
         {/* Notifikasi Error */}
@@ -98,11 +107,7 @@ export const Dashboard = () => {
           autoHideDuration={6000}
           onClose={() => setError(false)}
         >
-          <Alert
-            onClose={() => setError(false)}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
+          <Alert onClose={() => setError(false)} severity="error" sx={{ width: "100%" }}>
             Failed to fetch dashboard data
           </Alert>
         </Snackbar>
@@ -112,16 +117,10 @@ export const Dashboard = () => {
           {[
             { title: "Total Santri", value: dashboardData?.totalSantri },
             { title: "Total Pengajar", value: dashboardData?.totalPengajar },
-            {
-              title: "Total Wali Santri",
-              value: dashboardData?.totalWaliSantri,
-            },
-            {
-              title: "Total Mata Pelajaran",
-              value: dashboardData?.totalMataPelajaran,
-            },
-          ].map((item, index) => (
-            <Card key={index} className="shadow-lg">
+            { title: "Total Wali Santri", value: dashboardData?.totalWaliSantri },
+            { title: "Total Mata Pelajaran", value: dashboardData?.totalMataPelajaran },
+          ].map((item) => (
+            <Card key={item.title} className="shadow-lg">
               <CardContent>
                 <h2 className="text-xl font-semibold">{item.title}</h2>
                 <p className="text-3xl">{item.value}</p>
@@ -132,17 +131,12 @@ export const Dashboard = () => {
 
         {/* Pie Chart - Distribusi Santri Berdasarkan Gender */}
         <div className="mt-6">
-          <h2 className="text-2xl font-semibold mb-2">
-            Distribusi Santri Berdasarkan Gender
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">Distribusi Santri Berdasarkan Gender</h2>
           {dashboardData?.jumlahSantriPojo ? (
             <PieChart width={400} height={300}>
               <Pie
                 data={Object.entries(dashboardData.jumlahSantriPojo).map(
-                  ([key, value]) => ({
-                    name: key,
-                    value,
-                  })
+                  ([key, value]) => ({ name: key, value })
                 )}
                 cx="50%"
                 cy="50%"
@@ -150,9 +144,14 @@ export const Dashboard = () => {
                 fill="#8884d8"
                 label
               >
-                {COLORS.slice(0, 2).map((color, index) => (
-                  <Cell key={`cell-${index}`} fill={color} />
-                ))}
+                {Object.entries(dashboardData.jumlahSantriPojo).map(
+                  ([key], index) => (
+                    <Cell
+                      key={`gender-${key}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  )
+                )}
               </Pie>
               <Tooltip />
             </PieChart>
@@ -163,33 +162,29 @@ export const Dashboard = () => {
 
         {/* Bar Chart - Jumlah Santri Per Kelas */}
         <div className="mt-6">
-          <h2 className="text-2xl font-semibold mb-2">
-            Jumlah Santri Per Kelas
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">Jumlah Santri Per Kelas</h2>
           {dashboardData?.jumlahSantriPerKelas ? (
             <BarChart
               width={600}
               height={300}
-              data={dashboardData.jumlahSantriPerKelas.map((item, index) => ({
+              data={dashboardData.jumlahSantriPerKelas.map((item) => ({
                 name: Object.keys(item)[0],
                 value: Object.values(item)[0],
-                color: COLORS[index % COLORS.length],
               }))}
             >
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip content={<CustomTooltipJumlah />} />
               <Legend />
-              <Bar dataKey="value" name={"Nama Kelas"}>
-                {dashboardData.jumlahSantriPerKelas.map((_, index) => (
+              <Bar dataKey="value" name="Nama Kelas">
+                {dashboardData.jumlahSantriPerKelas.map((item) => (
                   <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    key={`jumlah-${Object.keys(item)[0]}`}
+                    fill={COLORS[Object.keys(item)[0].length % COLORS.length]}
                   />
                 ))}
               </Bar>
             </BarChart>
-
           ) : (
             <CircularProgress />
           )}
@@ -197,28 +192,25 @@ export const Dashboard = () => {
 
         {/* Bar Chart - Nilai Rata-Rata Per Kelas */}
         <div className="mt-6">
-          <h2 className="text-2xl font-semibold mb-2">
-            Nilai Rata-rata Per Kelas
-          </h2>
+          <h2 className="text-2xl font-semibold mb-2">Nilai Rata-rata Per Kelas</h2>
           {dashboardData?.nilaiAveragePerKelas ? (
             <BarChart
               width={600}
               height={300}
-              data={dashboardData.nilaiAveragePerKelas.map((item, index) => ({
+              data={dashboardData.nilaiAveragePerKelas.map((item) => ({
                 name: Object.keys(item)[0],
                 value: Object.values(item)[0],
-                color: COLORS[index % COLORS.length],
               }))}
             >
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip content={<CustomTooltipNilai />} />
               <Legend />
-              <Bar dataKey="value" name={"Nama Kelas"}>
-                {dashboardData.nilaiAveragePerKelas.map((_, index) => (
+              <Bar dataKey="value" name="Nama Kelas">
+                {dashboardData.nilaiAveragePerKelas.map((item) => (
                   <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    key={`nilai-${Object.keys(item)[0]}`}
+                    fill={COLORS[Object.keys(item)[0].length % COLORS.length]}
                   />
                 ))}
               </Bar>
