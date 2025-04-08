@@ -145,7 +145,9 @@ export const CreateSantri = () => {
       const res = await apiService.post("santri", payload);
       setSnackbar({
         open: true,
-        message: res ? "Santri berhasil ditambahkan" : "Gagal menambahkan santri",
+        message: res
+          ? "Santri berhasil ditambahkan"
+          : "Gagal menambahkan santri",
         severity: res ? "success" : "error",
       });
       dispatch(resetSantriState());
@@ -160,7 +162,9 @@ export const CreateSantri = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-all ${isOpen ? "ml-64" : "ml-24"}`}>
+    <div
+      className={`min-h-screen transition-all ${isOpen ? "ml-64" : "ml-24"}`}
+    >
       <Sidebar />
       <div className="container ml-30 p-6">
         <div className="flex flex-col justify-center w-full p-6">
@@ -223,7 +227,10 @@ export const CreateSantri = () => {
                     onChange={(e) => dispatch(setTempatLahir(e.target.value))}
                   />
 
-                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeID}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDateFns}
+                    adapterLocale={localeID}
+                  >
                     <DatePicker
                       label="Tanggal Lahir"
                       value={tanggalLahir ? new Date(tanggalLahir) : null}
@@ -243,12 +250,16 @@ export const CreateSantri = () => {
                   </LocalizationProvider>
 
                   <FormControl fullWidth margin="normal">
-                    <InputLabel id="jenis-kelamin-label">Jenis Kelamin</InputLabel>
+                    <InputLabel id="jenis-kelamin-label">
+                      Jenis Kelamin
+                    </InputLabel>
                     <Select
                       labelId="jenis-kelamin-label"
                       value={jenisKelamin}
                       label="Jenis Kelamin"
-                      onChange={(e) => dispatch(setJenisKelamin(e.target.value))}
+                      onChange={(e) =>
+                        dispatch(setJenisKelamin(e.target.value))
+                      }
                     >
                       <MenuItem value="Laki-Laki">Laki-Laki</MenuItem>
                       <MenuItem value="Perempuan">Perempuan</MenuItem>
@@ -289,12 +300,13 @@ export const CreateSantri = () => {
                     !loadingSearch && (
                       <div className="mb-4 text-red-600">
                         Tidak ditemukan.{" "}
-                        <span
+                        <button
+                          type="button"
                           onClick={() => navigate("/wali-santri/tambah")}
-                          className="underline cursor-pointer text-blue-600"
+                          className="underline cursor-pointer text-blue-600 bg-transparent border-none p-0 font-normal"
                         >
                           Buat data wali santri baru?
-                        </span>
+                        </button>
                       </div>
                     )
                   )}

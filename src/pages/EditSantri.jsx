@@ -182,7 +182,9 @@ export const EditSantri = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-all ${isOpen ? "ml-64" : "ml-24"}`}>
+    <div
+      className={`min-h-screen transition-all ${isOpen ? "ml-64" : "ml-24"}`}
+    >
       <Sidebar />
       <div className="container ml-30 p-6">
         <div className="flex flex-col justify-center w-full p-6">
@@ -229,7 +231,10 @@ export const EditSantri = () => {
                     value={tempatLahir}
                     onChange={(e) => dispatch(setTempatLahir(e.target.value))}
                   />
-                  <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeID}>
+                  <LocalizationProvider
+                    dateAdapter={AdapterDateFns}
+                    adapterLocale={localeID}
+                  >
                     <DatePicker
                       label="Tanggal Lahir"
                       value={tanggalLahir ? new Date(tanggalLahir) : null}
@@ -288,12 +293,13 @@ export const EditSantri = () => {
                     !loadingSearch && (
                       <div className="mb-4 text-red-600">
                         Tidak ditemukan.{" "}
-                        <span
+                        <button
+                          type="button"
                           onClick={() => navigate("/wali-santri/tambah")}
-                          className="underline cursor-pointer text-blue-600"
+                          className="underline cursor-pointer text-blue-600 bg-transparent border-none p-0 font-normal"
                         >
                           Buat data wali santri baru?
-                        </span>
+                        </button>
                       </div>
                     )
                   )}
