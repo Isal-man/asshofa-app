@@ -276,6 +276,22 @@ export const Santri = () => {
                       <CircularProgress size={28} />
                     </TableCell>
                   </TableRow>
+                ) : santri.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7}>
+                      <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png"
+                          alt="Not Found"
+                          className="w-24 h-24 mb-4 opacity-70"
+                        />
+                        <p className="text-lg font-semibold">Data santri tidak ditemukan</p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          Coba ubah filter pencarian kamu ya!
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   santri.map((row, index) => (
                     <TableRow key={row.id} className="hover:bg-gray-100">
@@ -290,7 +306,7 @@ export const Santri = () => {
                       <TableCell>
                         <IconButton
                           color="primary"
-                          onClick={() => navigate(`/santri/${row.id}`)}
+                          onClick={() => navigate(`/santri/detail/${row.id}`)}
                         >
                           <Visibility />
                         </IconButton>

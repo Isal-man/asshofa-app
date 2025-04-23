@@ -1,4 +1,45 @@
-import store from './store'
-import { resetAuthState, setUsername, setPassword, setGambarUser, setRole, resetSantriState, setAlamat, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir, setGambarSantri } from './slices'
+import store from "./store";
+import {
+  resetWaliSantriState,
+  setNamaLengkapWali,
+  setNoTelepon,
+  setHubunganDenganSantri,
+  setAlamatWali,
+  setGambarWali,
+  resetAuthState,
+  setUsername,
+  setPassword,
+  setGambarUser,
+  setRole,
+  resetSantriState,
+  setAlamat,
+  setIdWali,
+  setJenisKelamin,
+  setNamaLengkap,
+  setTanggalLahir,
+  setTempatLahir,
+  setGambarSantri,
+} from "./slices";
 
-export { store , resetAuthState, setUsername, setPassword, setGambarUser, setRole, resetSantriState, setAlamat, setIdWali, setJenisKelamin, setNamaLengkap, setTanggalLahir, setTempatLahir, setGambarSantri }
+export {
+  store,
+  resetWaliSantriState,
+  setNamaLengkapWali,
+  setNoTelepon,
+  setHubunganDenganSantri,
+  setAlamatWali,
+  setGambarWali,
+  resetAuthState,
+  setUsername,
+  setPassword,
+  setGambarUser,
+  setRole,
+  resetSantriState,
+  setAlamat,
+  setIdWali,
+  setJenisKelamin,
+  setNamaLengkap,
+  setTanggalLahir,
+  setTempatLahir,
+  setGambarSantri,
+};

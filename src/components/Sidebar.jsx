@@ -79,7 +79,7 @@ export const Sidebar = () => {
             <div className="border-t border-gray-700 mb-2" />
             <button
               onClick={handleLogout}
-              className={`w-full flex items-center px-2 py-3 mb-4 text-white hover:bg-gray-700 transition-all ${
+              className={`w-full flex items-center px-2 py-3 mb-4 text-white transition-all ${
                 isOpen ? "" : "justify-center"
               }`}
             >

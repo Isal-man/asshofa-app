@@ -295,7 +295,7 @@ export const EditSantri = () => {
                         Tidak ditemukan.{" "}
                         <button
                           type="button"
-                          onClick={() => navigate("/wali-santri/tambah")}
+                          onClick={() => navigate("/wali-santri/create")}
                           className="underline cursor-pointer text-blue-600 bg-transparent border-none p-0 font-normal"
                         >
                           Buat data wali santri baru?
