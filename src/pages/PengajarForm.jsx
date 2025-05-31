@@ -1,13 +1,12 @@
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setNamaLengkap,
-  setTempatLahir,
-  setTanggalLahir,
-  setJenisKelamin,
-  setAlamat,
-  setIdWali,
-  setGambarSantri,
-  resetSantriState,
+  resetPengajarState,
+  setGambarPengajar,
+  setNamaLengkapPengajar,
+  setSpesialisasi,
+  setAlamatPengajar,
+  setNoTeleponPengajar,
 } from "../redux";
 import { apiService } from "../services";
 import {
@@ -25,14 +24,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Sidebar, WaliSantriCard } from "../components";
+import { useEffect, useState } from "react";
+import { Sidebar } from "../components";
 import { useSidebar } from "../context";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { id as localeID } from "date-fns/locale";
 
 const Container = styled("div")({
   display: "flex",
@@ -62,31 +56,75 @@ const ProfileInput = styled("input")({
 
 const DEFAULT_IMAGE_PROFILE = import.meta.env.VITE_DEFAULT_IMAGE;
 
-export const CreateSantri = () => {
+export const PengajarForm = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
-  const {
-    namaLengkap,
-    tempatLahir,
-    tanggalLahir,
-    jenisKelamin,
-    alamat,
-    idWali,
-    gambar,
-  } = useSelector((state) => state.santri);
-
-  const { isOpen } = useSidebar();
   const navigate = useNavigate();
+  const { isOpen } = useSidebar();
 
+  const isEdit = !!id;
+
+  const { namaLengkap, noTelepon, spesialisasi, alamat, gambar } = useSelector(
+    (state) => state.pengajar
+  );
+
+  const [loadingData, setLoadingData] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [spesialisasiList, setSpesialisasiList] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const [searchWali, setSearchWali] = useState("");
-  const [loadingSearch, setLoadingSearch] = useState(false);
-  const [selectedWaliDetail, setSelectedWaliDetail] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  useEffect(() => {
+    if (!isEdit) {
+      dispatch(resetPengajarState());
+    }
+  }, [isEdit, dispatch]);
+
+  useEffect(() => {
+    const fetchSpesialisasi = async () => {
+      try {
+        const res = await apiService.get("/referensi/spesialisasi");
+        setSpesialisasiList(res.data.data);
+      } catch {
+        setSnackbar({
+          open: true,
+          message: "Gagal memuat data spesialisasi",
+          severity: "error",
+        });
+      }
+    };
+    fetchSpesialisasi();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isEdit) return;
+
+      setLoadingData(true);
+      try {
+        const res = await apiService.get(`/pengajar/${id}`);
+        const data = res.data.data;
+        dispatch(setNamaLengkapPengajar(data.namaLengkap));
+        dispatch(setNoTeleponPengajar(data.noTelepon));
+        dispatch(setAlamatPengajar(data.alamat));
+        dispatch(setGambarPengajar(data.gambar));
+        dispatch(setSpesialisasi(data.spesialisasi));
+      } catch {
+        setSnackbar({
+          open: true,
+          message: "Gagal memuat data pengajar",
+          severity: "error",
+        });
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    fetchData();
+  }, [id, isEdit, dispatch]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -98,8 +136,9 @@ export const CreateSantri = () => {
         const response = await apiService.post("upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        dispatch(setGambarSantri(response.data));
+        dispatch(setGambarPengajar(response.data));
       } catch (e) {
+        console.log("error", e);
         setSnackbar({ open: true, message: "Upload gagal", severity: "error" });
       } finally {
         setUploadingImage(false);
@@ -113,54 +152,49 @@ export const CreateSantri = () => {
     }
   };
 
-  const handleSearchWali = async () => {
-    setLoadingSearch(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      namaLengkap,
+      noTelepon,
+      spesialisasi,
+      alamat,
+      gambar: gambar || DEFAULT_IMAGE_PROFILE,
+    };
+
     try {
-      const res = await apiService.get(`/wali-santri?name=${searchWali}`);
-      setSelectedWaliDetail(res.data.data);
-      dispatch(setIdWali(res.data.data.id));
-    } catch (err) {
+      if (isEdit) {
+        await apiService.put(`/pengajar/${id}`, payload);
+      } else {
+        await apiService.post("/pengajar", payload);
+      }
+
       setSnackbar({
         open: true,
-        message: "Gagal mencari wali santri",
+        message: isEdit
+          ? "Pengajar berhasil diperbarui"
+          : "Pengajar berhasil ditambahkan",
+        severity: "success",
+      });
+
+      dispatch(resetPengajarState());
+      navigate("/pengajar");
+    } catch {
+      setSnackbar({
+        open: true,
+        message: "Gagal menyimpan data",
         severity: "error",
       });
-    } finally {
-      setLoadingSearch(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        namaLengkap,
-        tempatLahir,
-        tanggalLahir,
-        jenisKelamin,
-        alamat,
-        idWali,
-        gambar: gambar || DEFAULT_IMAGE_PROFILE,
-      };
-      const res = await apiService.post("santri", payload);
-      setSnackbar({
-        open: true,
-        message: res
-          ? "Santri berhasil ditambahkan"
-          : "Gagal menambahkan santri",
-        severity: res ? "success" : "error",
-      });
-      dispatch(resetSantriState());
-      navigate("/santri");
-    } catch (e) {
-      console.log("error", e);
-      setSnackbar({
-        open: true,
-        message: "Gagal menambahkan santri",
-        severity: "error",
-      });
-    }
-  };
+  if (loadingData) {
+    return (
+      <div className="text-center py-32 text-xl font-semibold text-gray-600">
+        Memuat data...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -169,7 +203,9 @@ export const CreateSantri = () => {
       <Sidebar />
       <div className="container ml-30 p-6">
         <div className="flex flex-col justify-center w-full p-6">
-          <h1 className="text-3xl font-bold mb-4">Tambah Santri</h1>
+          <h1 className="text-3xl font-bold mb-4">
+            {isEdit ? "Edit Pengajar" : "Tambah Pengajar"}
+          </h1>
           <div className="max-w-4xl w-full mb-6">
             <button
               onClick={() => navigate(-1)}
@@ -218,52 +254,31 @@ export const CreateSantri = () => {
                     fullWidth
                     margin="normal"
                     value={namaLengkap}
-                    onChange={(e) => dispatch(setNamaLengkap(e.target.value))}
+                    onChange={(e) =>
+                      dispatch(setNamaLengkapPengajar(e.target.value))
+                    }
                   />
                   <TextField
-                    label="Tempat Lahir"
+                    label="No Telepon"
                     fullWidth
                     margin="normal"
-                    value={tempatLahir}
-                    onChange={(e) => dispatch(setTempatLahir(e.target.value))}
+                    value={noTelepon}
+                    onChange={(e) => dispatch(setNoTeleponPengajar(e.target.value))}
                   />
-
-                  <LocalizationProvider
-                    dateAdapter={AdapterDateFns}
-                    adapterLocale={localeID}
-                  >
-                    <DatePicker
-                      label="Tanggal Lahir"
-                      value={tanggalLahir ? new Date(tanggalLahir) : null}
-                      onChange={(date) => {
-                        if (date) {
-                          const formatted = date.toISOString().split("T")[0];
-                          dispatch(setTanggalLahir(formatted));
-                        }
-                      }}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          margin: "normal",
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-
                   <FormControl fullWidth margin="normal">
-                    <InputLabel id="jenis-kelamin-label">
-                      Jenis Kelamin
-                    </InputLabel>
+                    <InputLabel>Spesialisasi</InputLabel>
                     <Select
-                      labelId="jenis-kelamin-label"
-                      value={jenisKelamin}
-                      label="Jenis Kelamin"
+                      value={spesialisasi}
                       onChange={(e) =>
-                        dispatch(setJenisKelamin(e.target.value))
+                        dispatch(setSpesialisasi(e.target.value))
                       }
+                      label="Spesialisasi"
                     >
-                      <MenuItem value="Laki-Laki">Laki-Laki</MenuItem>
-                      <MenuItem value="Perempuan">Perempuan</MenuItem>
+                      {spesialisasiList.map((item) => (
+                        <MenuItem key={item.id} value={item.spesialisasi}>
+                          {item.spesialisasi}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
 
@@ -273,45 +288,8 @@ export const CreateSantri = () => {
                     margin="normal"
                     multiline
                     value={alamat}
-                    onChange={(e) => dispatch(setAlamat(e.target.value))}
+                    onChange={(e) => dispatch(setAlamatPengajar(e.target.value))}
                   />
-                  <TextField
-                    label="Cari Nama Wali Santri"
-                    fullWidth
-                    margin="normal"
-                    value={searchWali}
-                    onChange={(e) => setSearchWali(e.target.value)}
-                  />
-                  <Button
-                    variant="outlined"
-                    onClick={handleSearchWali}
-                    disabled={loadingSearch}
-                    sx={{ mt: 1, mb: 2 }}
-                  >
-                    {loadingSearch ? "Mencari..." : "Cari Wali Santri"}
-                  </Button>
-
-                  {selectedWaliDetail ? (
-                    <WaliSantriCard
-                      gambar={selectedWaliDetail?.santriList?.[0]?.gambarWali}
-                      namaLengkap={selectedWaliDetail.namaLengkap}
-                      status={"wali-santri"}
-                    />
-                  ) : (
-                    searchWali &&
-                    !loadingSearch && (
-                      <div className="mb-4 text-red-600">
-                        Tidak ditemukan.{" "}
-                        <button
-                          type="button"
-                          onClick={() => navigate("/wali-santri/create")}
-                          className="underline cursor-pointer text-blue-600 bg-transparent border-none p-0 font-normal"
-                        >
-                          Buat data wali santri baru?
-                        </button>
-                      </div>
-                    )
-                  )}
 
                   <Button
                     fullWidth
@@ -320,7 +298,7 @@ export const CreateSantri = () => {
                     sx={{ mt: 2 }}
                     type="submit"
                   >
-                    Simpan
+                    {isEdit ? "Simpan Perubahan" : "Simpan"}
                   </Button>
                 </form>
               </CardContent>

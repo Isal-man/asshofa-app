@@ -287,6 +287,7 @@ export const EditSantri = () => {
                     <WaliSantriCard
                       gambar={selectedWaliDetail?.santriList?.[0]?.gambarWali}
                       namaLengkap={selectedWaliDetail.namaLengkap}
+                      status={"wali-santri"}
                     />
                   ) : (
                     searchWali &&

@@ -19,6 +19,26 @@ import {
   setTanggalLahir,
   setTempatLahir,
   setGambarSantri,
+  resetPengajarState,
+  setGambarPengajar,
+  setNamaLengkapPengajar,
+  setSpesialisasi,
+  setAlamatPengajar,
+  setNoTeleponPengajar,
+  setNilai,
+  setKeterangan,
+  setTanggalPenilaian,
+  setIdSantri,
+  setIdJadwal,
+  resetNilaiSantriState,
+
+  // ✅ Tambahan dari jadwalPengajaranSlice
+  resetJadwalPengajaran,
+  setHari,
+  setMataPelajaran,
+  setJamMulai,
+  setJamSelesai,
+  setIdPengajar,
 } from "./slices";
 
 export {
@@ -42,4 +62,24 @@ export {
   setTanggalLahir,
   setTempatLahir,
   setGambarSantri,
+  resetPengajarState,
+  setGambarPengajar,
+  setNamaLengkapPengajar,
+  setSpesialisasi,
+  setAlamatPengajar,
+  setNoTeleponPengajar,
+  setNilai,
+  setKeterangan,
+  setTanggalPenilaian,
+  setIdSantri,
+  setIdJadwal,
+  resetNilaiSantriState,
+
+  // ✅ Export tambahan untuk jadwal pengajaran
+  resetJadwalPengajaran,
+  setHari,
+  setMataPelajaran,
+  setJamMulai,
+  setJamSelesai,
+  setIdPengajar,
 };

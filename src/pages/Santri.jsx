@@ -75,6 +75,7 @@ export const Santri = () => {
       setSantri(response.data.data.list);
       setTotalRows(response.data.data.total);
     } catch (error) {
+      console.log("error when get data santri", error);
       setErrorFetch("santri");
       setError(true);
     } finally {
@@ -89,6 +90,7 @@ export const Santri = () => {
         : await apiService.get(`/referensi/kota`);
       setKotaOptions(response.data.data);
     } catch (error) {
+      console.error("error when get data kota", error);
       setErrorFetch("kota");
       setError(true);
     }
@@ -129,6 +131,7 @@ export const Santri = () => {
       setOpenConfirm(false);
       setDeleteId(null);
     } catch (error) {
+      console.error("error when delete santri", error);
       setErrorFetch("hapus");
       setError(true);
       setOpenConfirm(false);

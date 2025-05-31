@@ -107,7 +107,7 @@ export const DetailSantri = () => {
                 </div>
               </div>
               <hr className="my-8 border-gray-300" />
-              <WaliSantriCard gambar={santri.gambarWali} namaLengkap={santri.namaWali} />
+              <WaliSantriCard gambar={santri.gambarWali} namaLengkap={santri.namaWali} status={"wali-santri"} />
             </div>
           </div>
         </div>

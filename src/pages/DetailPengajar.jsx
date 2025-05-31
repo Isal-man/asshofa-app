@@ -1,3 +1,5 @@
+// DetailPengajar.jsx
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiService from "../services/apiService";
@@ -12,11 +14,15 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
-export const DetailWaliSantri = () => {
+dayjs.extend(customParseFormat);
+
+export const DetailPengajar = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [waliSantri, setWaliSantri] = useState(null);
+  const [pengajar, setPengajar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteId, setDeleteId] = useState(null);
@@ -26,15 +32,16 @@ export const DetailWaliSantri = () => {
   const [errorSnackbar, setErrorSnackbar] = useState(false);
 
   useEffect(() => {
-    fetchWaliSantri();
+    fetchPengajar();
   }, [id]);
 
-  const fetchWaliSantri = async () => {
+  const fetchPengajar = async () => {
     try {
-      const res = await apiService.get(`/wali-santri/${id}`);
-      setWaliSantri(res.data.data);
+      const res = await apiService.get(`/pengajar/${id}`);
+      setPengajar(res.data.data);
     } catch (err) {
-      setError("Gagal memuat data wali santri");
+      console.error("Fetch Error:", err); // ✅ Handled error
+      setError("Gagal memuat data pengajar");
     } finally {
       setLoading(false);
     }
@@ -47,15 +54,16 @@ export const DetailWaliSantri = () => {
 
   const handleDeleteSantri = async () => {
     try {
-      await apiService.delete(`/santri/${deleteId}`);
-      setWaliSantri((prev) => ({
+      await apiService.delete(`/jadwal-pengajaran/${deleteId}`);
+      setPengajar((prev) => ({
         ...prev,
         santriList: prev.santriList.filter((s) => s.id !== deleteId),
       }));
-      setMessage("Santri berhasil dihapus");
+      setMessage("Jadwal pengajaran berhasil dihapus");
       setSuccess(true);
     } catch (err) {
-      setMessage("Gagal menghapus santri");
+      console.error("Delete Error:", err); // ✅ Handled error
+      setMessage("Gagal menghapus jadwal pengajaran");
       setErrorSnackbar(true);
     } finally {
       setOpenConfirm(false);
@@ -71,7 +79,7 @@ export const DetailWaliSantri = () => {
     );
   }
 
-  if (error || !waliSantri) {
+  if (error || !pengajar) {
     return <div className="text-center text-red-500 mt-10">{error}</div>;
   }
 
@@ -80,7 +88,7 @@ export const DetailWaliSantri = () => {
       <Sidebar />
       <div className="container ml-30 p-6">
         <div className="flex flex-col justify-center w-full p-6">
-          <h1 className="text-3xl font-bold mb-4">Detail Wali Santri</h1>
+          <h1 className="text-3xl font-bold mb-4">Detail Pengajar</h1>
 
           <div className="mb-6">
             <button
@@ -94,12 +102,12 @@ export const DetailWaliSantri = () => {
           <div className="bg-white text-gray-800 rounded-2xl shadow-xl p-10 w-full max-w-5xl">
             <div className="flex flex-col items-center mb-8">
               <img
-                src={waliSantri.gambar}
-                alt={waliSantri.namaLengkap}
+                src={pengajar.gambar}
+                alt={pengajar.namaLengkap}
                 className="w-40 h-40 object-cover rounded-full border-4 border-blue-500 shadow-lg"
               />
               <h2 className="mt-4 text-3xl font-bold text-blue-700">
-                {waliSantri.namaLengkap}
+                {pengajar.namaLengkap}
               </h2>
             </div>
 
@@ -109,19 +117,21 @@ export const DetailWaliSantri = () => {
                   No. Telepon
                 </span>
                 <span className="font-semibold text-gray-800">
-                  : {waliSantri.noTelepon}
+                  &nbsp;{pengajar.noTelepon}
                 </span>
               </div>
               <div className="flex items-start">
                 <span className="w-52 font-medium text-gray-500">Alamat</span>
                 <span className="font-semibold text-gray-800">
-                  : {waliSantri.alamat}
+                  &nbsp;{pengajar.alamat}
                 </span>
               </div>
               <div className="flex">
-                <span className="w-52 font-medium text-gray-500">Hubungan</span>
+                <span className="w-52 font-medium text-gray-500">
+                  Spesialisasi
+                </span>
                 <span className="font-semibold text-gray-800">
-                  : {waliSantri.hubunganDenganSantri}
+                  &nbsp;{pengajar.spesialisasi}
                 </span>
               </div>
             </div>
@@ -129,25 +139,27 @@ export const DetailWaliSantri = () => {
             <hr className="my-8 border-gray-300" />
 
             <h3 className="text-2xl font-bold text-blue-700 mb-4">
-              Daftar Santri
+              Daftar Jadwal Pengajaran
             </h3>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200 text-sm">
                 <thead className="bg-gray-100 text-left">
                   <tr>
                     <th className="px-6 py-3 border-b-2 border-gray-200">
-                      Foto
+                      Mata pelajaran
+                    </th>
+                    <th className="px-6 py-3 border-b-2 border-gray-200">Hari</th>
+                    <th className="px-6 py-3 border-b-2 border-gray-200">
+                      Jam mulai
                     </th>
                     <th className="px-6 py-3 border-b-2 border-gray-200">
-                      Nama
+                      Jam selesai
                     </th>
-                    <th className="px-6 py-3 border-b-2 border-gray-200">
-                      Aksi
-                    </th>
+                    <th className="px-6 py-3 border-b-2 border-gray-200">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {waliSantri.santriList.length === 0 ? (
+                  {pengajar.jadwalPengajaranList.length === 0 ? (
                     <tr>
                       <td colSpan={7}>
                         <div className="flex flex-col items-center justify-center py-10 text-gray-500">
@@ -157,37 +169,48 @@ export const DetailWaliSantri = () => {
                             className="w-24 h-24 mb-4 opacity-70"
                           />
                           <p className="text-lg font-semibold">
-                            Data santri tidak ditemukan
+                            Data jadwal pengajaran tidak ditemukan
                           </p>
                           <p className="text-sm text-gray-400 mt-1">
-                            Belum ada santri terdaftar.
+                            Belum ada jadwal pengajaran.
                             <span
-                              onClick={() => navigate("/santri/create")}
+                              role="button"
+                              tabIndex={0}
+                              onClick={() =>
+                                navigate("/jadwal-pengajaran/create")
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  navigate("/jadwal-pengajaran/create");
+                                }
+                              }}
                               className="text-blue-600 hover:underline font-medium cursor-pointer ml-1"
                             >
-                              Tambahkan santri sekarang
+                              Tambahkan jadwal pengajaran sekarang
                             </span>
                           </p>
                         </div>
                       </td>
                     </tr>
                   ) : (
-                    waliSantri.santriList.map((santri) => (
-                      <tr key={santri.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 border-b border-gray-200">
-                          <img
-                            src={santri.gambar}
-                            alt={santri.namaLengkap}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
+                    pengajar.jadwalPengajaranList.map((jadwalPengajaran) => (
+                      <tr key={jadwalPengajaran.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 border-b border-gray-200 font-semibold">
+                          {jadwalPengajaran.mataPelajaran}
                         </td>
                         <td className="px-6 py-4 border-b border-gray-200 font-semibold">
-                          {santri.namaLengkap}
+                          {jadwalPengajaran.hari}
+                        </td>
+                        <td className="px-6 py-4 border-b border-gray-200 font-semibold">
+                          {dayjs(jadwalPengajaran.jamMulai, "HH:mm:ss").format("HH:mm")}
+                        </td>
+                        <td className="px-6 py-4 border-b border-gray-200 font-semibold">
+                          {dayjs(jadwalPengajaran.jamSelesai, "HH:mm:ss").format("HH:mm")}
                         </td>
                         <td className="px-6 py-4 border-b border-gray-200 space-x-2">
                           <button
                             onClick={() =>
-                              navigate(`/santri/detail/${santri.id}`)
+                              navigate(`/jadwal-pengajaran/detail/${jadwalPengajaran.id}`)
                             }
                             className="text-blue-600 hover:text-blue-800"
                           >
@@ -195,14 +218,14 @@ export const DetailWaliSantri = () => {
                           </button>
                           <button
                             onClick={() =>
-                              navigate(`/santri/edit/${santri.id}`)
+                              navigate(`/jadwal-pengajaran/edit/${jadwalPengajaran.id}`)
                             }
                             className="text-yellow-500 hover:text-yellow-700"
                           >
                             <FaEdit />
                           </button>
                           <button
-                            onClick={() => handleDeleteConfirm(santri.id)}
+                            onClick={() => handleDeleteConfirm(jadwalPengajaran.id)}
                             className="text-red-600 hover:text-red-800"
                           >
                             <FaTrash />
@@ -218,11 +241,10 @@ export const DetailWaliSantri = () => {
         </div>
       </div>
 
-      {/* Dialog Konfirmasi */}
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle>Konfirmasi Hapus</DialogTitle>
         <DialogContent>
-          Apakah kamu yakin ingin menghapus santri ini?
+          Apakah kamu yakin ingin menghapus jadwal pengajaran ini?
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)} color="primary">
@@ -234,7 +256,6 @@ export const DetailWaliSantri = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={success || errorSnackbar}
         autoHideDuration={4000}

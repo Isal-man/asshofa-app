@@ -11,7 +11,11 @@ import {
   EditSantri,
   CreateSantri,
   DetailWaliSantri,
-  CreateWaliSantri
+  CreateWaliSantri,
+  DetailPengajar,
+  PengajarForm,
+  DetailJadwalPengajaran,
+  CreateJadwalPengajaran
 } from '../pages'
 import { PrivateRoute, ProtectedRoute } from '../routes'
 
@@ -30,6 +34,9 @@ export const AppRoutes = () => {
         <Route path='/santri/detail/:id' element={<PrivateRoute element={<DetailSantri />} />} />
         <Route path='/santri/edit/:id' element={<PrivateRoute element={<EditSantri />} />} />
         <Route path='/jadwal-pengajaran' element={<PrivateRoute element={<JadwalPengajaran />} />} />
+        <Route path='/jadwal-pengajaran/create' element={<PrivateRoute element={<CreateJadwalPengajaran />} />} />
+        <Route path='/jadwal-pengajaran/edit/:id' element={<PrivateRoute element={<CreateJadwalPengajaran />} />} />
+        <Route path='/jadwal-pengajaran/detail/:id' element={<PrivateRoute element={<DetailJadwalPengajaran />} />} />
 
         {/* protected route */}
         <Route path='/wali-santri' element={
@@ -46,6 +53,15 @@ export const AppRoutes = () => {
         } />
         <Route path='/pengajar' element={
           <ProtectedRoute element={<Pengajar />} allowedRoles={"ADMIN, PENGAJAR"} />
+        } />
+        <Route path='/pengajar/detail/:id' element={
+          <ProtectedRoute element={<DetailPengajar />} allowedRoles={"ADMIN, PENGAJAR"} />
+        } />
+        <Route path='/pengajar/edit/:id' element={
+          <ProtectedRoute element={<PengajarForm />} allowedRoles={"ADMIN, PENGAJAR"} />
+        } />
+        <Route path='/pengajar/create' element={
+          <ProtectedRoute element={<PengajarForm />} allowedRoles={"ADMIN, PENGAJAR"} />
         } />
       </Routes>
     </Router>

@@ -31,50 +31,49 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 export const Pengajar = () => {
-  const [wali, setWali] = useState([]);
+  const [pengajar, setPengajar] = useState([]);
   const [searchParams, setSearchParams] = useState({ page: 1, limit: 10 });
   const [totalRows, setTotalRows] = useState(0);
   const [filters, setFilters] = useState({});
+  const [spesialisasiOptions, setSpesialisasiOptions] = useState([]);
   const [error, setError] = useState(false);
   const [errorFetch, setErrorFetch] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [hubunganOptions, setHubunganOptions] = useState([]);
   const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchWali();
+    fetchPengajar();
   }, [searchParams]);
 
   useEffect(() => {
-    fetchHubunganOptions();
+    const fetchSpesialisasi = async () => {
+      try {
+        const res = await apiService.get("/referensi/spesialisasi");
+        setSpesialisasiOptions(res.data.data || []);
+      } catch (err) {
+        console.error("Gagal ambil data spesialisasi:", err);
+      }
+    };
+    fetchSpesialisasi();
   }, []);
 
-  const fetchWali = async () => {
+  const fetchPengajar = async () => {
     setLoading(true);
     try {
       const params = { ...searchParams, ...filters };
-      const response = await apiService.post("/wali-santri/data", params);
-      setWali(response.data.data.list);
+      const response = await apiService.post("/pengajar/data", params);
+      setPengajar(response.data.data.list);
       setTotalRows(response.data.data.total);
     } catch (error) {
-      setErrorFetch("wali santri");
+      setErrorFetch("pengajar");
       setError(true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchHubunganOptions = async () => {
-    try {
-      const response = await apiService.get("/referensi/wali-santri");
-      setHubunganOptions(response.data.data);
-    } catch (error) {
-      console.error("Gagal mengambil data referensi hubungan");
     }
   };
 
@@ -101,14 +100,14 @@ export const Pengajar = () => {
 
   const handleDelete = async () => {
     try {
-      await apiService.delete(`/wali-santri/${deleteId}`);
-      setWali((prev) => prev.filter((w) => w.id !== deleteId));
+      await apiService.delete(`/pengajar/${deleteId}`);
+      setPengajar((prev) => prev.filter((p) => p.id !== deleteId));
       setOpenConfirm(false);
       setDeleteId(null);
-      setMessage("Wali santri berhasil dihapus!");
+      setMessage("Pengajar berhasil dihapus!");
       setSuccess(true);
     } catch (error) {
-      setMessage("Gagal menghapus wali santri!");
+      setMessage("Gagal menghapus pengajar!");
       setErrorFetch("hapus");
       setError(true);
       setOpenConfirm(false);
@@ -126,46 +125,36 @@ export const Pengajar = () => {
               variant="contained"
               color="success"
               startIcon={<Add />}
-              onClick={() => navigate("/wali-santri/create")}
-              sx={{
-                textTransform: "none",
-                borderRadius: "8px",
-                boxShadow: "0 3px 5px rgba(0,0,0,0.1)",
-              }}
+              onClick={() => navigate("/pengajar/create")}
+              sx={{ textTransform: "none", borderRadius: "8px" }}
             >
-              Tambah Wali
+              Tambah Pengajar
             </Button>
           </div>
 
-          {/* Snackbar Error */}
           <Snackbar
             open={error}
             autoHideDuration={5000}
             onClose={() => setError(false)}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
           >
             <Alert
               severity="error"
-              variant="filled"
               onClose={() => setError(false)}
-              sx={{ width: "100%" }}
+              variant="filled"
             >
               Gagal mengambil data {errorFetch}
             </Alert>
           </Snackbar>
 
-          {/* Snackbar Success */}
           <Snackbar
             open={success}
             autoHideDuration={4000}
             onClose={() => setSuccess(false)}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
           >
             <Alert
-              onClose={() => setSuccess(false)}
               severity="success"
+              onClose={() => setSuccess(false)}
               variant="filled"
-              sx={{ width: "100%" }}
             >
               {message}
             </Alert>
@@ -178,7 +167,7 @@ export const Pengajar = () => {
                   <TableCell>No</TableCell>
                   <TableCell>Nama Lengkap</TableCell>
                   <TableCell>No Telepon</TableCell>
-                  <TableCell>Hubungan</TableCell>
+                  <TableCell>Spesialisasi</TableCell>
                   <TableCell>Aksi</TableCell>
                 </TableRow>
                 <TableRow className="bg-gray-50">
@@ -206,17 +195,17 @@ export const Pengajar = () => {
                   <TableCell>
                     <TextField
                       select
-                      name="hubunganDenganSantri"
-                      value={filters.hubunganDenganSantri || ""}
+                      name="spesialisasi"
+                      value={filters.spesialisasi || ""}
                       onChange={handleSearchChange}
                       variant="outlined"
                       size="small"
                       fullWidth
                     >
                       <MenuItem value="">Semua</MenuItem>
-                      {hubunganOptions.map((option) => (
-                        <MenuItem key={option.id} value={option.status}>
-                          {option.status}
+                      {spesialisasiOptions.map((option) => (
+                        <MenuItem key={option.id} value={option.spesialisasi}>
+                          {option.spesialisasi}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -240,12 +229,9 @@ export const Pengajar = () => {
                       <CircularProgress />
                     </TableCell>
                   </TableRow>
-                ) : wali.length > 0 ? (
-                  wali.map((row, index) => (
-                    <TableRow
-                      key={row.id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
+                ) : pengajar.length > 0 ? (
+                  pengajar.map((row, index) => (
+                    <TableRow key={row.id} className="hover:bg-gray-50">
                       <TableCell>
                         {(searchParams.page - 1) * searchParams.limit +
                           index +
@@ -253,21 +239,17 @@ export const Pengajar = () => {
                       </TableCell>
                       <TableCell>{row.namaLengkap}</TableCell>
                       <TableCell>{row.noTelepon}</TableCell>
-                      <TableCell>{row.hubunganDenganSantri}</TableCell>
+                      <TableCell>{row.spesialisasi}</TableCell>
                       <TableCell>
                         <IconButton
                           color="primary"
-                          onClick={() =>
-                            navigate(`/wali-santri/detail/${row.id}`)
-                          }
+                          onClick={() => navigate(`/pengajar/detail/${row.id}`)}
                         >
                           <Visibility />
                         </IconButton>
                         <IconButton
                           color="warning"
-                          onClick={() =>
-                            navigate(`/wali-santri/edit/${row.id}`)
-                          }
+                          onClick={() => navigate(`/pengajar/edit/${row.id}`)}
                         >
                           <Edit />
                         </IconButton>
@@ -318,50 +300,43 @@ export const Pengajar = () => {
               className="bg-white rounded-lg shadow-sm"
             />
           </div>
-        </div>
 
-        <Dialog
-          open={openConfirm}
-          onClose={() => setOpenConfirm(false)}
-          aria-describedby="alert-dialog-slide-description"
-          slots={{ transition: Transition }}
-          slotProps={{
-            paper: {
-              sx: {
-                borderRadius: 4,
-                padding: 2,
-                background: "#fefefe",
-                boxShadow: 10,
+          <Dialog
+            open={openConfirm}
+            onClose={() => setOpenConfirm(false)}
+            slots={{ transition: Transition }}
+            slotProps={{
+              paper: {
+                sx: {
+                  borderRadius: 4,
+                  padding: 2,
+                  background: "#fefefe",
+                  boxShadow: 10,
+                },
               },
-            },
-          }}
-        >
-          <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.3rem" }}>
-            Konfirmasi Hapus
-          </DialogTitle>
-          <DialogContent>
-            Apakah Anda yakin ingin menghapus wali santri ini? Tindakan ini
-            tidak dapat dibatalkan.
-          </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button
-              onClick={() => setOpenConfirm(false)}
-              variant="outlined"
-              color="inherit"
-              sx={{ borderRadius: 2, textTransform: "none" }}
-            >
-              Batal
-            </Button>
-            <Button
-              onClick={handleDelete}
-              variant="contained"
-              color="error"
-              sx={{ borderRadius: 2, textTransform: "none" }}
-            >
-              Hapus
-            </Button>
-          </DialogActions>
-        </Dialog>
+            }}
+          >
+            <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.3rem" }}>
+              Konfirmasi Hapus
+            </DialogTitle>
+            <DialogContent>
+              Apakah Anda yakin ingin menghapus pengajar ini? Tindakan ini tidak
+              dapat dibatalkan.
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button
+                onClick={() => setOpenConfirm(false)}
+                variant="outlined"
+                color="inherit"
+              >
+                Batal
+              </Button>
+              <Button onClick={handleDelete} variant="contained" color="error">
+                Hapus
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       </div>
     </div>
   );

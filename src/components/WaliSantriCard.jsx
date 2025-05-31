@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 
-export const WaliSantriCard = ({ gambar, namaLengkap }) => {
+export const WaliSantriCard = ({ gambar, namaLengkap, status }) => {
   return (
     <>
       <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-blue-700">WALI SANTRI</h3>
+        <h3 className="text-xl font-bold text-blue-700">{status === "wali-santri" ? "WALI SANTRI" : "PENGAJAR"}</h3>
       </div>
       <div className="flex flex-col items-center">
         <img
